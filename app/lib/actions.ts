@@ -18,18 +18,24 @@ const UpdateInvoice = FormSchema.omit({id: true, date: true})
 
 // Create Invoices
 export async function createInvoice(formData:FormData) {
+  try {
     const {customerId, amount, status} = CreateInvoice.parse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
-  })
-  const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
+      customerId: formData.get('customerId'),
+      amount: formData.get('amount'),
+      status: formData.get('status'),
+    })
+    const amountInCents = amount * 100;
+    const date = new Date().toISOString().split('T')[0];
 
-  await sql `
+    await sql `
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})`
 
+  } catch (error) {
+    return{
+      message: 'Something went wrong. Failed to create the invoice. Please check again'
+  }
+  }
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
@@ -43,10 +49,16 @@ export async function updateInvoice (id: string, formData:FormData) {
   });
   const amountInCents = amount * 100;
 
-  await sql`
+ try {
+   await sql`
     UPDATE invoices
     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
     WHERE id = ${id}`;
+ } catch (error) {
+   return {
+     message: 'Something went wrong. Failed to update the invoice. Please try again',
+   }
+ }
 
   revalidatePath('/dashboard/invoices');
   redirect(`/dashboard/invoices/`);
@@ -55,10 +67,16 @@ export async function updateInvoice (id: string, formData:FormData) {
 //delete invoices
 
 export async function deleteInvoice (id: string) {
-  await sql`
+  try {
+    await sql`
   DELETE FROM invoices
   WHERE id = ${id}`
 
+  } catch (error) {
+    return{
+      message: 'Something went wrong. Failed to delete the invoice. Please try again.'
+    }
+  }
   revalidatePath('/dashboard/invoices');
 }
 

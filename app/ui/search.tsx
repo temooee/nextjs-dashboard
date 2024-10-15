@@ -2,7 +2,6 @@
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {URL} from "next/dist/compiled/@edge-runtime/primitives";
 import {useDebouncedCallback} from "use-debounce";
 
 

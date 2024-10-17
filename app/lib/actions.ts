@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import {LatestInvoice} from "@/app/lib/definitions";
 
 
 const FormSchema = z.object({
@@ -54,6 +53,7 @@ export async function createInvoice(prevState: State, formData:FormData) {
 
   } catch (error) {
     return{
+      error: error,
       message: 'Something went wrong. Failed to create the invoice. Please check again'
   }
   }
@@ -85,6 +85,7 @@ export async function updateInvoice (id: string, prevState: State, formData:Form
     WHERE id = ${id}`;
  } catch (error) {
    return {
+     error: error,
      message: 'Something went wrong. Failed to update the invoice. Please try again',
    }
  }
@@ -103,6 +104,7 @@ export async function deleteInvoice (id: string) {
 
   } catch (error) {
     return{
+      error: error,
       message: 'Something went wrong. Failed to delete the invoice. Please try again.'
     }
   }
